@@ -7,7 +7,6 @@ class SynthesizerBuilder:
         self.synth = Synthesizer()  # Start with a default Synthesizer instance
 
     def add_signal(self, time_on, time_off, repeats, name):
-        print("Adding signal...")
         baseline_level = 0
         elevated_level = 1
 
@@ -25,14 +24,14 @@ class SynthesizerBuilder:
         padded_bold = np.pad(bold_signal, (0, max(0, self.synth.length - len(bold_signal))), 'constant')
 
         # Add the signal
-        self.__add_signal(padded_task, f"task_{name}")
+        self.__add_to_design_matrix(padded_task, f"task_{name}")
         self.__add_signal(padded_bold, f"signal_{name}")
 
         return self
 
     def add_intercept(self):
         intercept = np.ones(self.synth.length)
-        self.__add_signal(intercept, "intercept")
+        self.__add_to_design_matrix(intercept, "intercept")
         return self
 
     def add_length(self, length):
@@ -41,12 +40,13 @@ class SynthesizerBuilder:
 
     def add_drift(self, start, end):
         drift = np.linspace(start, end, self.synth.length)
-        self.__add_signal(drift, "drift 1")
+        self.__add_to_design_matrix(drift, "drift 1")
         return self
 
     def build(self):
         return self.synth  # Return the fully configured Synthesizer instance
 
+    # Private functions -- No Touchy --
     def __add_signal(self, signal, name):
         old_signal = self.synth.signal
         new_signal = old_signal.append(signal)
@@ -54,6 +54,15 @@ class SynthesizerBuilder:
 
         # Save the names for reference
         self.signal_names = self.synth.signal_names.append(name)
+
+    def __add_to_design_matrix(self, params, name):
+        # Add the design matrix parameters
+        old_params = self.synth.design_matrix
+        new_params = old_params.append(params)
+        self.design_matrix = new_params
+
+        # Keep track of the names of the various inputs
+        self.design_matrix_names = self.synth.design_matrix_names.append(name)
 
     def __bold_response(self, signal):
         time_to_peak = 6  # typical peak for the HRF in seconds
