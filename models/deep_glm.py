@@ -23,10 +23,10 @@ class BoldGLM(nn.Module):
         
     def check(losses, current_loss, patience):
         if (len(losses) < 5): 
-            return False;
+            return False
     
         list1 = losses[-patience:]
-        return(all(x <= current_loss for x in list1))
+        return all(x <= current_loss for x in list1)
     
     def train_bold_glm(X, y, learning_rate=0.05, n_epochs=20000):
         print(X.shape, y.shape)
