@@ -7,15 +7,17 @@ class SynthesizerBuilder:
     def __init__(self):
         self.synth = Synthesizer()  # Start with a default Synthesizer instance
 
-    def add_signal(self, time_on, time_off, repeats, name):
+    def add_signal(self, time_on, time_off, repeats, offset, name):
         baseline_level = 0
         elevated_level = 1
 
         # Generate the timeseries mask
+        start_delay = np.ones(offset) * baseline_level
         block_on = np.ones(time_on) * elevated_level
         block_off = np.ones(time_off) * baseline_level
-        block = np.concatenate([block_on, block_off])
+        block = np.concatenate([start_delay, block_on, block_off])
         task_signal = np.tile(block, repeats)
+        print("Task signal shape: ", task_signal.shape)
 
         # Convolve into BOLD signal
         bold_signal = self.__bold_response(task_signal)
