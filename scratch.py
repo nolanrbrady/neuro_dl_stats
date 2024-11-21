@@ -28,8 +28,7 @@ beta_values_target = np.array([1, 1.5, 12, 3])
 # print(design_matrix.shape, beta_values.shape)
 y_true = np.dot(design_matrix, beta_values_target)
 # print("Y_true: ", y_true, type(y_true), y_true.shape)
-
-
+design_matrix = np.concatenate([design_matrix, signal], axis=1)
 
 # Run the model
 print(design_matrix.shape)
@@ -37,9 +36,9 @@ print(design_matrix.shape)
 VAE = ModelFactory.create_model('autoencoder', design_matrix.shape)
 
 # Train the model
-model = VAE.train(design_matrix, learning_rate=0.001, n_epochs=2000)
+model = VAE.train(design_matrix.T, learning_rate=0.001, n_epochs=20000)
 
 # Get the latent value
-x_sample = torch.FloatTensor(design_matrix)
+x_sample = torch.FloatTensor(design_matrix.T)
 latent_values = model.get_latent_value(x_sample)
-print("Learned latent value: ", latent_values.shape)
+print("Learned latent value: ", latent_values, latent_values.shape)

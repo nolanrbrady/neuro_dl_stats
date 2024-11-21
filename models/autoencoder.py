@@ -8,7 +8,7 @@ class AutoEncoder(nn.Module):
         super(AutoEncoder, self).__init__()
 
         # Extract input dimension from data_shape
-        input_dim = data_shape[1]  # This will be 4
+        input_dim = data_shape[0]  # This will be 4
 
         # Encoder layers
         self.encoder_fc1 = nn.Linear(input_dim, 128)
@@ -22,7 +22,6 @@ class AutoEncoder(nn.Module):
         self.decoder_fc3 = nn.Linear(128, input_dim)  # Output back to input_dim (4)
 
     def reparameterize(self, mu, logvar):
-        """Reparameterization trick."""
         std = torch.exp(0.5 * logvar)
         eps = torch.randn_like(std)
         return mu + eps * std
@@ -44,7 +43,6 @@ class AutoEncoder(nn.Module):
         return x, mu, logvar
 
     def get_latent_value(self, x):
-        """Returns the latent value (z) for a given input."""
         with torch.no_grad():
             x = F.relu(self.encoder_fc1(x))
             x = F.relu(self.encoder_fc2(x))
@@ -53,13 +51,12 @@ class AutoEncoder(nn.Module):
             z = self.reparameterize(mu, logvar)
         return z
 
-    def train(self, x, learning_rate=0.001, n_epochs=100):
+    def train(self, x, learning_rate=0.0001, n_epochs=100):
         # Convert input to PyTorch tensor
         x_train = torch.FloatTensor(x)
 
         # Define loss function
         def vae_loss(recon_x, x, mu, logvar):
-            """VAE loss = reconstruction loss + KL divergence."""
             recon_loss = F.mse_loss(recon_x, x, reduction='sum')
             kld = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
             return recon_loss + kld
@@ -80,7 +77,7 @@ class AutoEncoder(nn.Module):
             loss.backward()
             optimizer.step()
 
-            if epoch % 100 == 0:
+            if epoch % 1000 == 0:
                 print(f'Epoch [{epoch}/{n_epochs}], Loss: {loss.item():.4f}')
 
         return self
