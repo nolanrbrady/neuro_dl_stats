@@ -46,6 +46,15 @@ class SynthesizerBuilder:
         self.__add_to_design_matrix(drift, "drift 1")
         return self
 
+    def add_heart_rate(self):
+        sampling_freq = 1/10.17
+        t = np.arange(0, self.synth.length, 1)
+        hr_wave = np.cos(2*np.pi*sampling_freq*t)
+        hr_wave = hr_wave * 0.25 # make the amplitude smaller
+        print("HR wave: ", hr_wave.shape)
+        self.__add_to_design_matrix(hr_wave,"heart_rate")
+        return self
+
     def build(self):
         return self.synth  # Return the fully configured Synthesizer instance
 
