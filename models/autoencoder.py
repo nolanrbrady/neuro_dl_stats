@@ -8,10 +8,10 @@ class AutoEncoder(nn.Module):
         super(AutoEncoder, self).__init__()
 
         # Extract input dimension from data_shape
-        input_dim = data_shape[0]  # This will be 4
+        self.input_dim = data_shape[0]  # This will be 4
 
         # Encoder layers
-        self.encoder_fc1 = nn.Linear(input_dim, 128)
+        self.encoder_fc1 = nn.Linear(self.input_dim, 128)
         self.encoder_fc2 = nn.Linear(128, 64)
         self.mu_layer = nn.Linear(64, latent_dim)       # Mean of latent space
         self.logvar_layer = nn.Linear(64, latent_dim)  # Log variance of latent space
@@ -19,7 +19,7 @@ class AutoEncoder(nn.Module):
         # Decoder layers
         self.decoder_fc1 = nn.Linear(latent_dim, 64)
         self.decoder_fc2 = nn.Linear(64, 128)
-        self.decoder_fc3 = nn.Linear(128, input_dim)  # Output back to input_dim (4)
+        self.decoder_fc3 = nn.Linear(128, self.input_dim)  # Output back to input_dim (4)
 
     def reparameterize(self, mu, logvar):
         std = torch.exp(0.5 * logvar)

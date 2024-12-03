@@ -14,9 +14,10 @@ import torch.optim as optim
 class BoldGLM(nn.Module):
     def __init__(self, data_shape):
         super(BoldGLM, self).__init__()
-        n_predictors = data_shape.shape[1]
+        self.n_predictors = data_shape.shape[1]
+        self.data_shape = data_shape.shape
         # Create learnable beta parameters with size matching the number of predictors
-        self.betas = nn.Parameter(torch.randn(n_predictors, 1))  # Initialize with random values
+        self.betas = nn.Parameter(torch.randn(self.n_predictors, 1))  # Initialize with random values
 
     def forward(self, X):
         # Perform matrix multiplication (dot product between X and betas)
