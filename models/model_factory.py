@@ -1,14 +1,16 @@
 from .cnn_glm import SeqCNN
 from .deep_glm import BoldGLM
+from .variational_autoencoder import VariationalAutoEncoder
 from .autoencoder import AutoEncoder
 
 class ModelFactory:
     @staticmethod
     def create_model(model_type, data_shape, **kwargs):
         models = {
-            "glm": BoldGLM,  # Ensure BoldGLM is defined elsewhere
+            "glm": BoldGLM,
             "cnn": SeqCNN,
-            "autoencoder": AutoEncoder,  # Ensure AutoEncoder is defined elsewhere
+            "variational_autoencoder": VariationalAutoEncoder,
+            "autoencoder": AutoEncoder,
         }
 
         if model_type not in models:
