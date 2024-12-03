@@ -60,7 +60,7 @@ class AutoEncoder(nn.Module):
             loss.backward()
             optimizer.step()
 
-            if epoch % 1000 == 0:
+            if epoch % 10 == 0:
                 print(f'Epoch [{epoch}/{n_epochs}], Loss: {loss.item():.4f}')
 
         return self
