@@ -23,16 +23,16 @@ class TestModelFactory(unittest.TestCase):
 
     def test_create_autoencoder_model(self):
         data_shape = (500, 5)
-        # design_matrix = np.random.rand(*data_shape)
         model = ModelFactory.create_model("variational_autoencoder", data_shape)
         self.assertIsInstance(model, VariationalAutoEncoder)
         self.assertEqual(model.input_dim, data_shape[0])
 
     def test_invalid_model_type(self):
         data_shape = (10, 10)
+        design_matrix = np.random.rand(*data_shape)
         with self.assertRaises(ValueError) as context:
-            ModelFactory.create_model("invalid_type", data_shape)
+            ModelFactory.create_model("invalid_type", design_matrix)
         self.assertEqual(
             str(context.exception),
-            "Model type 'invalid_type' is not supported. Choose from: ['glm', 'cnn', 'autoencoder']"
+            "Model type 'invalid_type' is not supported. Choose from: ['glm', 'cnn', 'variational_autoencoder', 'autoencoder']"
         )
