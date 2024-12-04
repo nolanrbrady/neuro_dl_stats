@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 
-# TODO - make variational autoencoder extend autoencoder
+# TODO - make variational autoencoder extend autoencoder (inheritance)
 
 class VariationalAutoEncoder(nn.Module):
     def __init__(self, data_shape, latent_dim=1):
@@ -22,6 +22,7 @@ class VariationalAutoEncoder(nn.Module):
         self.decoder_fc1 = nn.Linear(latent_dim, 64)
         self.decoder_fc2 = nn.Linear(64, 128)
         self.decoder_fc3 = nn.Linear(128, self.input_dim)  # Output back to input_dim (4)
+
 
     def reparameterize(self, mu, logvar):
         std = torch.exp(0.5 * logvar)
