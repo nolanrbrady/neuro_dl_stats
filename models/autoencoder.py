@@ -21,25 +21,25 @@ class AutoEncoder(nn.Module):
         self.decoder_fc1 = nn.Linear(latent_dim, 64)
         self.decoder_fc2 = nn.Linear(64, 128)
         self.decoder_fc3 = nn.Linear(128, self.input_dim)  # Output back to input_dim (4)
-
-    def forward(self, x):
-        # Encoding
+    
+    # DRY - created encode/decode methods since these lines were repeated in forward and get_latent_value
+    def encode(self, x):
         x = F.relu(self.encoder_fc1(x))
         x = F.relu(self.encoder_fc2(x))
-        z = self.latent_layer(x)
+        return self.latent_layer(x)
 
-        # Decoding
+    def decode(self, z):
         x = F.relu(self.decoder_fc1(z))
         x = F.relu(self.decoder_fc2(x))
-        x = torch.sigmoid(self.decoder_fc3(x))  # Output between 0 and 1
-        return x
+        return torch.sigmoid(self.decoder_fc3(x))  # Output between 0 and 1
+
+    def forward(self, x):
+        z = self.encode(x)
+        return self.decode(z)
 
     def get_latent_value(self, x):
         with torch.no_grad():
-            x = F.relu(self.encoder_fc1(x))
-            x = F.relu(self.encoder_fc2(x))
-            z = self.latent_layer(x)
-        return z
+            return self.encode(x)
 
     def train(self, x, learning_rate=0.0001, n_epochs=100):
         # Convert input to PyTorch tensor
