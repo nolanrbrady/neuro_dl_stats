@@ -24,7 +24,7 @@ To ensure everything works as intended, we’ve also included a suite of tests. 
 ### Setting Up
 Before starting it's advised you use `anaconda` to create a new project environment. This can be done by running:
 ```bash
-conda create --neuro_dl_example python=3.12.2
+conda create --name neuro_dl_example python=3.12.2
 conda activate neuro_dl_example
 ```
 Once you have done this please run:
