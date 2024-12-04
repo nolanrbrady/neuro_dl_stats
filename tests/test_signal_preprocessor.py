@@ -38,3 +38,20 @@ class TestFNIRSPreprocessingBuilder(unittest.TestCase):
 
         # Assert that SNR improves after preprocessing
         self.assertGreater(processed_snr, initial_snr, "SNR did not improve after preprocessing")
+
+    def test_pipeline_output_shape(self):
+        # Apply preprocessing using the builder
+        processed_signal = (
+            SignalPreprocessorBuilder(self.noisy_signal)
+            .bandpass_filter(low_cutoff=0.01, high_cutoff=0.2, fs=self.fs)
+            .baseline_drift_correction()
+            .remove_spiking_artifacts(threshold=2.0)
+            .build()
+        )
+
+        # Assert that the output shape matches the input shape
+        self.assertEqual(
+            processed_signal.shape,
+            self.noisy_signal.shape,
+            "Processed signal shape does not match the input signal shape"
+        )
