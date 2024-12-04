@@ -3,6 +3,8 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 
+# TODO - make variational autoencoder extend autoencoder
+
 class VariationalAutoEncoder(nn.Module):
     def __init__(self, data_shape, latent_dim=1):
         super(VariationalAutoEncoder, self).__init__()
