@@ -2,57 +2,81 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
+from autoencoder import AutoEncoder
 
 # TODO - make variational autoencoder extend autoencoder (inheritance)
 
-class VariationalAutoEncoder(nn.Module):
+class VariationalAutoEncoder(AutoEncoder):
     def __init__(self, data_shape, latent_dim=1):
-        super(VariationalAutoEncoder, self).__init__()
+        super(VariationalAutoEncoder, self).__init__(data_shape, latent_dim)
 
-        # Extract input dimension from data_shape
-        self.input_dim = data_shape[0]  # This will be 4
+        # Override latent layer with mean and log variance layers
+        self.mu_layer = nn.Linear(64, latent_dim)
+        self.logvar_layer = nn.Linear(64, latent_dim)
 
-        # Encoder layers
-        self.encoder_fc1 = nn.Linear(self.input_dim, 128)
-        self.encoder_fc2 = nn.Linear(128, 64)
-        self.mu_layer = nn.Linear(64, latent_dim)       # Mean of latent space
-        self.logvar_layer = nn.Linear(64, latent_dim)  # Log variance of latent space
+        # # Extract input dimension from data_shape
+        # self.input_dim = data_shape[0]  # This will be 4
 
-        # Decoder layers
-        self.decoder_fc1 = nn.Linear(latent_dim, 64)
-        self.decoder_fc2 = nn.Linear(64, 128)
-        self.decoder_fc3 = nn.Linear(128, self.input_dim)  # Output back to input_dim (4)
+        # # Encoder layers
+        # self.encoder_fc1 = nn.Linear(self.input_dim, 128)
+        # self.encoder_fc2 = nn.Linear(128, 64)
+        # self.mu_layer = nn.Linear(64, latent_dim)       # Mean of latent space
+        # self.logvar_layer = nn.Linear(64, latent_dim)  # Log variance of latent space
 
+        # # Decoder layers
+        # self.decoder_fc1 = nn.Linear(latent_dim, 64)
+        # self.decoder_fc2 = nn.Linear(64, 128)
+        # self.decoder_fc3 = nn.Linear(128, self.input_dim)  # Output back to input_dim (4)
 
-    def reparameterize(self, mu, logvar):
-        std = torch.exp(0.5 * logvar)
-        eps = torch.randn_like(std)
-        return mu + eps * std
-
-    def forward(self, x):
-        # Encoding
+    # new method, DRY 
+    def encode(self, x):
         x = F.relu(self.encoder_fc1(x))
         x = F.relu(self.encoder_fc2(x))
         mu = self.mu_layer(x)
         logvar = self.logvar_layer(x)
-
-        # Latent space sampling
+        return mu, logvar
+    
+    def reparameterize(self, mu, logvar):
+        std = torch.exp(0.5 * logvar)
+        eps = torch.randn_like(std)
+        return mu + eps * std
+    
+    def forward(self, x):
+        mu, logvar = self.encode(x)
         z = self.reparameterize(mu, logvar)
+        return self.decode(z), mu, logvar
 
-        # Decoding
-        x = F.relu(self.decoder_fc1(z))
-        x = F.relu(self.decoder_fc2(x))
-        x = torch.sigmoid(self.decoder_fc3(x))  # Output between 0 and 1
-        return x, mu, logvar
+    # def forward(self, x):
+    #     # Encoding
+    #     x = F.relu(self.encoder_fc1(x))
+    #     x = F.relu(self.encoder_fc2(x))
+    #     mu = self.mu_layer(x)
+    #     logvar = self.logvar_layer(x)
+
+    #     # Latent space sampling
+    #     z = self.reparameterize(mu, logvar)
+
+    #     # Decoding
+    #     x = F.relu(self.decoder_fc1(z))
+    #     x = F.relu(self.decoder_fc2(x))
+    #     x = torch.sigmoid(self.decoder_fc3(x))  # Output between 0 and 1
+    #     return x, mu, logvar
+
 
     def get_latent_value(self, x):
         with torch.no_grad():
-            x = F.relu(self.encoder_fc1(x))
-            x = F.relu(self.encoder_fc2(x))
-            mu = self.mu_layer(x)
-            logvar = self.logvar_layer(x)
-            z = self.reparameterize(mu, logvar)
-        return z
+            mu, logvar = self.encode(x)
+            return self.reparameterize(mu, logvar)
+        
+    # def get_latent_value(self, x):
+    #     with torch.no_grad():
+    #         x = F.relu(self.encoder_fc1(x))
+    #         x = F.relu(self.encoder_fc2(x))
+    #         mu = self.mu_layer(x)
+    #         logvar = self.logvar_layer(x)
+    #         z = self.reparameterize(mu, logvar)
+    #     return z
+
 
     def train(self, x, learning_rate=0.0001, n_epochs=100):
         # Convert input to PyTorch tensor
