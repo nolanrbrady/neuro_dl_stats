@@ -1,6 +1,10 @@
 # Deep Learning for Neuroscience using OOP Principles and Best Practices
 ### Contributors: Sierra Reschke and Nolan Brady
 
+## Final Paper
+Please find our final paper attached here [Final paper](./docs/Object-oriented_programing_in_deep_learning.pdf)
+
+
 ## Overview
 
 This project is an effort to combine object-oriented programming (OOP) principles with deep learning to explore how neural network architectures can recreate statistical responses from complex BOLD signal inputs. In neuroscience, statistical models have long been used to estimate variable weights on neural activation, despite the inherently non-linear nature of brain activity. By leveraging deep learning, we aim to provide a more flexible and accurate approach, while demonstrating how OOP principles can make such workflows scalable and maintainable.

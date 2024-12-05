@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
-from autoencoder import AutoEncoder
+from .autoencoder import AutoEncoder
 
 # TODO - make variational autoencoder extend autoencoder (inheritance)
 
